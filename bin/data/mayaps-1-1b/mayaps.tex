@@ -1,0 +1,1168 @@
+%%%==================================================================
+%%%
+%%%   mayaps.tex    version 1.1b   March 4, 2017
+%%%                 works with  mayaps.pro  version 1.1b
+%%%
+%%%   For typing ancient Maya glyphs with TeX/LaTeX  AND(!!!)  dvips. 
+%%%
+%%%   author:  Stepan Orevkov  <orevkov(a)math.ups-tlse.fr>
+%%%
+%%%   Acknowlegments:
+%%%            1. Ancient Maya typesetting principles are due to
+%%%               Bruno Delprat
+%%%            2. The TeX code in this file is inspired mostly
+%%%               by `epsf.tex' (Tom Rokicki)
+%%%            3. The idea to use PS for drawing composed glyphs
+%%%               belongs to Ilya Zakharevich
+%%%
+%%%   Changes:
+%%%
+%%%   version 0.13  1. checking balanced parentheses
+%%%                 2. selecting only those glyphs which are used
+%%%                    in the document
+%%%
+%%%   version 0.14  1. multifont support (macro \mayaFont\cs=fontname)
+%%%                 2. add glyphs from eps files (macro \mayaAddGlyph)
+%%%
+%%%   version 0.15  1. add braces around \def's in \mayaAddGlyph because
+%%%                    otherwise \c{c} (c-cedille) is not printed
+%%%                 2. add modifiers '*' and '?' which are equivalent to
+%%%                    'r' and 'R' respectively but do not require []
+%%%                 3. see files makefont and empty.mpf
+%%%
+%%%   version 0.16  1. the affix modification vector [(L)(U)(R)(D)] is
+%%%                    extended up to [(L)(U)(R)(D)(S)] where (S) is the
+%%%                    string of modifiers applied for a single affix
+%%%                 2. make \mayaAddGlyph to replace glyphs (is was
+%%%                    declared in previous versions but it did not work)
+%%%
+%%%   version 0.17  1. add modifier '&' which is equivalent to 'c' but
+%%%                    does not requires []
+%%%                 2. when an affix is converted to a central element,
+%%%                    then its default orientation is (S)
+%%%                 3. new algorithm for affix orientation choice
+%%%                    (see epmty.mpf)
+%%%
+%%%   version 0.18  1. ligatures
+%%%
+%%%   version 0.19  1. correct \maya@L. Now it checks only once each
+%%%                    nonempty subword of #1
+%%%                 2. replace all `/' by `:' in glyph codes
+%%%                 3. simplified the command \special{!/M{...
+%%%                 4. \mayaAddLigature, \mayaIInsitsToChange...
+%%%                 5. \mayaGlyph{} (empty argument) yields a space
+%%%                 6. (added 23.4.7) \mayaFont\a=font and \mayaFont\b=font
+%%%                    create two links to the same font (now if a glyph is
+%%%                    added to the font \a, then it is added automatically 
+%%%                    to the font \b).
+%%%                 7. mayaps.pro is separated from codex.mpf
+%%%
+%%%   version 0.20  1. Cancel the change 6 of v 0.19 by adding % before
+%%%                    lines marked by "added 23.4.7". This change can be
+%%%                    restored by removing the `%'.
+%%%                 2. \maya@F -> \maya@FNum in the ligatures loading
+%%%                    in the macro maya@aux (otherwise ligatures are not
+%%%                    loaded from mpf's other the codex.mpf)
+%%%                 3. Added \mayaGlobal(Un)define etc.
+%%%                 4. Added \codexcol and \codexbw
+%%%                 5. Glyphs with captions
+%%%
+%%%   version 0.21  1. Replace \codexcol and \codexbw by \red and \bw
+%%%
+%%%   version 0.22  1. Replace some \ifx with \if in \maya@GGN because
+%%%                    otherwise !, ?, and : conflict with [french]{babel} 
+%%%                 2. The default value of \mayahskip is changed
+%%%                 3. \mayaGlyph[InLine]C*{CaptionText}{GlyphCode} and
+%%%                    \mayaDebug#1  are added
+%%%
+%%%   version 0.23  1. Works correctly when mayaps.pro or *.mpf is not found
+%%%                    by TeX, but is found by dvips
+%%%                 2. Change of the fontsize in captions (macros
+%%%                    \mayaCfive, \mayaCsix, ..., \mayaCsixteen
+%%%                 3. Colors. The names \red,\bw,... are replaced by:
+%%%                    \mayaRed,\mayaBW,\codexred,\codexbw,\gatesred,\gatesbw
+%%%
+%%%   version 0.24  1. Type 1 based fonts (see makefont, codex.mpf)
+%%%
+%%%   version 0.25  1. show instead of showglyph is used in fonts (see makefont)
+%%%                 2. @ instead of & is used as the affix->central modifier
+%%%                 3. See mayaps-d, 6.1."How a glyph is placed in the cartouche"
+%%%                 4. Default value of \mayahspace is 1/10*\maya@xsize
+%%%
+%%%   version 0.26  1. The implementation of the ligature mechanism is rewritten 
+%%%                    to avoid multiletter control sequences overflow
+%%%                 2. make :!; non-active in captions (for [french]{babel}) 
+%%%                 3. \long\def\maya and \long\def\mayaC. Now the argument of
+%%%                    these macros may contain  many paragraphs.
+%%%
+%%%   version 0.27  1. Multi-color support : \mayaRGB{rrr ggg bbb}c
+%%%                 2. Adjustment of the caption font to the glyph size
+%%%                 3. The right quote ' acts as ! or | (symmetry modifyer)
+%%%                 4. = instead of @ is used as the affix->central modifier
+%%%
+%%%   version 0.28  1. Dependence of the ratio w/h on the font. The command
+%%%                    \mayaIInsistTo... is replaced by \mayaSetCartoucheAspect
+%%%
+%%%   version 0.29  1. Cancel \ifmaya@TmpFile and \ifmaya@TmpOpen
+%%%
+%%%   version 0.30  1. (in mayaps.pro) MayaColorDict is replaced by MayaDict
+%%%                 2. \mayaIgnoreRGB
+%%%                 3. \baselineskip=0pt in the captions
+%%%                 4. \ifmayaCFixedWidth (fixed width of captions)
+%%%                 %. ! is not a modifier
+%%%
+%%%   version 0.31  1. Default value of \mayahskip is 0 plus 1/30*\maya@ysize minus 
+%%%                    1/30*\maya@ysize
+%%%                 2. The default value of the \maya@depth is changed (see mayaps-d)
+%%%                 3. Percent sign somewhere in \maya@Lc (to avoid extra spaces)
+%%%                 4. \mayaRed and \mayaBW are put into another file  red89.tex
+%%%                 5. The command \mpfmap (see file mpfmap.tex)
+%%%
+%%%   version 0.32  1. The parameters for \mayaC are made the same as for \maya
+%%%                 2. \maya@depth changed to 1/2(h-1.5ex)+1/2h' - c (see mayaps-d)
+%%%                 3. Default value of \mayavspace is 1/10*\maya@ysize
+%%%                 4. Default value of \mayahspace is 1/30*\maya@ysize
+%%%                 5. mayaGlyphInLineC parameters similar to mayaGlyphInLine
+%%%                 6. Default value of \mayahskip is 0pt
+%%%                 7. mayaps-d updated
+%%%
+%%%   version 0.33  1. '&' in glyph names is not accepted
+%%%                 2. \mayaGlyphCC, \mayaGlyphCC*
+%%%                 3. \maya@capt is extracted from \maya@GC
+%%%                 4. see changes in mpfmap.tex
+%%%                 5. Add `/showpage{}def' in mayaps.pro to fix \mayaAddGlyph
+%%%                    (it did not work at least since v.0.21)
+%%%                 6. \if\e\modif -> \ifx\e\modif in \maya@AG
+%%%
+%%%   version 0.34  1. \mayaImport[(L)(U)(R)(D)(S)]{newname}\fnt{oldname}A/C
+%%%
+%%%   version 0.35  1. Add substitution x->x in \mayaAddGlyph and \mayaImport
+%%%                 2. \mayaRGB{...}c defines colors c and `c simultaneously.
+%%%
+%%%   version 0.36  1. Empty glyphs are fixed. One can use again ((((:).):).)
+%%%                 2. Changes in the manual mayaps-d (mostly about colors)
+%%%
+%%%   version 0.37  1. Coloring of composed glyphs is allowed i.e. commands
+%%%                    such as \maya{ (A.B:C)r.D } can be used now
+%%%                 2. \mayaTOC
+%%%                 3. We add %%VMusage 0 0 at the beginning of the file mayaps.tmp
+%%%                    to aviod sectioning of the resulting ps file (the sectioning
+%%%                    does not work correctly in TeX Live now). This is a cheating.
+%%%                    Insert `\def\mayaNoVMtrick{}' before `\input mayaps'
+%%%                    to cancel this cheating.
+%%%                 4. see changes in mpfmap.tex
+%%%
+%%%   version 0.38  1. \maya@special is extracted from \mayaGlyph and it is
+%%%                    called from \mayaGlyphInLine instead of \mayaGlyph
+%%%                    As a consequence, \protect\maya, \protect\mayaGlyph
+%%%                    and \protect\mayaGlyphInLine work properly in toc
+%%%                 2. \mayaTOC = \protect\maya (in LaTeX) or \maya (in TeX)
+%%%                 3. see changes in mpfmap.tex
+%%%                 4. Message about VMtric is modified
+%%%                 5. \mayaImport: the default [LURDS] is inherited from from
+%%%                    the imported glyph
+%%%                 6. The automatical preloading of the font codex can be
+%%%                    disabled by inserting the command \def\mayaNoPreloadedFont{}
+%%%                    before \input mayaps
+%%%                 7. The absence of  red89.tex  is no longer fatal
+%%%                 8. A bug in \mayaUndefine if fixed
+%%%                 9. \mayaSize{y}:  y < 1pt is forbidden
+%%%
+%%%   version 0.39  1. Hypertext references in TOC in mayaps-d.tex
+%%%                 2. Subection "Installation" in mayaps-d.tex
+%%%
+%%%   version 1.0   1. Substitutions are applied only to initial substrings or
+%%%                    substrings preceded by one of .:/|'-+*?=](
+%%%                 2. The "verbatim" bug (see mayaps-d v 0.38 Sect 8.1) is fixed
+%%%                 3. \maya@a and \maya@b are extracted from \maya@aux
+%%%                    which saved 20% of time of \output execution
+%%%                 4. French spacing before `?' is suppressed in glyph captions
+%%%                 5. Backslash is now allowed in eps files used in \mayaAddGlyph
+%%%
+%%%   version 1.1a  1. Infixation support: xxx<yyy>
+%%%                    Most changes are in mayaps.pro
+%%%                    The only change in the TeX-part is that `>' is added to the
+%%%                    list of characters preceding a substitution
+%%%
+%%%   version 1.1b  1. Infixation support:
+%%%                    1.1. The empty glyph bug is fixed;
+%%%                    1.2. SetInfixScaleFactors (in mayaps.pro) is added;
+%%%                    1.3. The corresponding changes in mayaps-d.tex
+%%%
+\catcode`\@=11
+\def\maya@Message{\immediate\write16}
+\maya@Message{This is `mayaps.tex' v 1.1b <March 4, 2017>}
+%
+%
+\newread \maya@i
+\newwrite\maya@o
+%
+\newdimen\maya@xsize
+\newdimen\maya@ysize  \maya@ysize=12mm
+\newdimen\maya@depth
+\newdimen\maya@rsize
+\newdimen\maya@tsize
+\newdimen\maya@tmp
+\newdimen\mayavcorrection \mayavcorrection=0pt
+\newdimen\mayavspace
+\newdimen\mayavspaceC
+\newdimen\mayahspace
+%
+\newskip\mayahskip
+%
+\newcount\maya@intWidth
+\newcount\maya@intHeight
+\newcount\maya@ParDep
+\newcount\maya@GlyphNum \maya@GlyphNum=0
+\newcount\maya@n
+\newcount\maya@FNum     \maya@FNum=0   % the number of maya fonts
+\newcount\maya@FNumNF   \maya@FNumNF=0 % the number of Non Found fonts
+\newcount\maya@F        \maya@F=0      % the current maya font
+%
+\newif\ifmaya@
+\newif\ifmaya@header
+\newif\ifmaya@iOK
+\newif\ifmaya@oOK
+\newif\ifmaya@c
+\newif\ifmaya@AG
+\newif\ifmaya@l
+\newif\ifmayaCFW \mayaCFWtrue   % CFW = Caption of a Fixed Width
+
+\newif\ifImport \Importfalse
+%
+\newtoks\maya@output
+\newtoks\maya@gn
+\newtoks\maya@lt
+%
+\global\let\maya@d=\maya@ParDep
+\maya@Message{\ifnum\catcode`:=13 active\else nonactive\fi}
+{\catcode`\:=12\gdef\maya@co{:}
+ \catcode`\;=12\gdef\maya@qm{?}
+ \catcode`\%=12\gdef\maya@pc{%}
+}%
+%
+%  Names of macros defined in this file
+%
+%  \codex
+%  \maya
+%
+%  \Maya@act
+%  \maya@@a
+%  \maya@@c
+%  \maya@0@@aaa, \maya@0@@bbb, ..., \maya@1@@aaa, ...
+%  \maya@0@0, \maya@0@1, ..., \maya@1@0, \maya@1@1, ...
+%  \maya@0@GlyphNum, \maya@1@GlyphNum, ...
+%  \maya@a
+%  \maya@A
+%  \maya@AC
+%  \maya@AG
+%  \maya@AGaux
+%  \maya@AGwarn
+%  \maya@aux
+%  \maya@b
+%  \maya@B
+%  \maya@BC
+%  \maya@c@aaa, \maya@c@bbb, ...
+%  \maya@capt
+%  \maya@CheckBP
+%  \maya@CheckBPa
+%  \maya@co
+%  \maya@ff0, \maya@ff1, ...
+%  \maya@fnaaa, \maya@fnbbb, ...                        % added 23.4.7
+%  \maya@GC
+%  \maya@GCC
+%  \maya@GetGlyphNames
+%  \maya@GGN
+%  \maya@GGNc
+%  \maya@GGNcA
+%  \maya@GGNend
+%  \maya@GGNSkipArg
+%  \maya@GLC
+%  \maya@Imp
+%  \maya@io
+%  \maya@L
+%  \maya@L0@aaa, \maya@L0@bbb, ..., \maya@L1@aaa, ...
+%  \maya@La
+%  \maya@Lc
+%  \maya@Lin
+%  \maya@Lp
+%  \maya@Lq
+%  \maya@LT
+%  \maya@LTa
+%  \maya@LTb
+%  \maya@LTc
+%  \maya@LTd
+%  \maya@LTe
+%  \maya@LTf
+%  \maya@Lz
+%  \maya@Message
+%  \maya@MsgNotFound
+%  \maya@P
+%  \maya@pc
+%  \maya@qm
+%  \maya@sA
+%  \maya@sethskip
+%  \maya@sethspace
+%  \maya@setvspace
+%  \maya@Slash
+%  \maya@special
+%  \maya@write
+%  \maya@xsize@0, \maya@xsize@1, ...
+%
+%  \mayaAddGlyph
+%  \mayaAddLigature
+%  \mayaC
+%  \mayaCFW
+%  \mayaDebug
+%  \mayaDefine
+%  \mayaDeleteLigature
+%  \mayaFont
+%  \mayaGlobalAddLigature
+%  \mayaGlobalDefine
+%  \mayaGlobalDeleteLigature
+%  \mayaGlobalUndefine
+%  \mayaGlyph
+%  \mayaGlyphC
+%  \mayaGlyphCC
+%  \mayaGlyphInLine
+%  \mayaGlyphInLineC
+%  \mayaIgnoreRGB
+%  \mayaNoPreloadedFont
+%  \mayaNoVMtrick
+%  \mayaRGB
+%  \mayaSetCatroucheSapect
+%  \mayaSize
+%  \mayaTOC
+%  \mayaUndefine
+%
+%============================================================
+%
+%  The heart of the program: here we draw a composed glyph #1 using
+%  the PostScript recursive procedure `parse' from `codex.mpf'
+%  (`parse' is called from `E')
+%
+\def\mayaGlyph#1{%
+  \hbox to \maya@xsize{\vbox to \maya@ysize{\vfil\maya@special{#1}}\hfil}}
+%
+\def\maya@special#1{\ifnum\maya@FNum=0
+    \maya@Message{mayaps::WARNING: No Maya font is loaded. Glyph #1 is ignored.}%
+  \else{\def\a{#1}\def\e{}\ifx\a\e\else
+    \maya@intWidth=\maya@xsize   \maya@intHeight=\maya@ysize
+%   the next line is just for saving 4 bytes per glyph in the ps file
+    \divide\maya@intWidth by 100 \divide\maya@intHeight by 100
+    \maya@Slash{#1}\maya@lt={}\let\E=\expandafter\maya@true%  See TeXbook, p. 374:
+    \E\E\E\maya@L\E{\the\maya@gn}\E\E\E\maya@CheckBP\E{\the\maya@lt}\ifmaya@
+       \E\E\E\maya@GetGlyphNames\E{\the\maya@lt}%
+       \special{"M(\the\maya@lt)\the\maya@intWidth\space
+           \the\maya@intHeight\space \the\maya@F\space E}%
+    \else\special{"M(bad "( )")\the\maya@intWidth\space
+           \the\maya@intHeight\space \the\maya@F\space E}\fi\fi}\fi}
+%========================================================
+%
+%  Set  \maya@ysize = #1, set  \maya@xsize  proportionally,
+%  and set the corresponding default values of \mayavspace,\mayahskip
+%  and set the font in captions
+%
+\def\mayaSize#1{% 
+    \maya@rsize=1in \maya@ysize=#1
+    \maya@tmp=1pt \ifnum\maya@ysize<\maya@tmp
+      \maya@Message{mayaps::WARNING: minimal Maya font size is 1pt}
+      \maya@ysize=1pt
+    \fi
+    \ifnum\maya@FNum>0
+      \maya@tsize=\csname maya@xsize@\the\maya@F\endcsname in
+    \else\maya@tsize=1.53333in\fi
+%
+%  Here we adapt Tom Rokicki's code from `epsf.tex' to compute  x = ty/r
+%  (rather than  y = rx/t  as is written in a comment in epsf.tex v 2.7k).
+%  He claims that the error is at most 1/4000 pt
+%
+    \maya@tmp=\maya@tsize \divide\maya@tmp\maya@rsize
+    \maya@xsize=\maya@ysize \multiply\maya@xsize\maya@tmp
+    \multiply\maya@tmp\maya@rsize \advance\maya@tsize-\maya@tmp
+    \maya@tmp=\maya@ysize
+    {%                     start a new group to hide \loop
+     \loop \advance\maya@tsize\maya@tsize \divide\maya@tmp 2
+     \ifnum \maya@tmp>0
+        \ifnum \maya@tsize<\maya@rsize
+        \else
+           \advance\maya@tsize-\maya@rsize \advance\maya@xsize\maya@tmp
+        \fi
+     \repeat
+     \global\maya@tmp=\maya@xsize
+    }%
+    \maya@xsize=\maya@tmp
+%                                  Adjustment of the caption font size
+    \maya@sethskip \maya@setvspace \maya@sethspace
+    \maya@tmp=19mm
+    \ifnum\maya@ysize<\maya@tmp \maya@tmp=11mm
+      \ifnum\maya@ysize<\maya@tmp \maya@tmp=7mm
+        \ifnum\maya@ysize<\maya@tmp \maya@tmp=5mm
+          \ifnum\maya@ysize<\maya@tmp\mayaCfive\else\mayaCsix\fi
+        \else\maya@tmp=9mm
+          \ifnum\maya@ysize<\maya@tmp\mayaCseven\else\mayaCeight\fi\fi
+      \else\maya@tmp=15mm
+        \ifnum\maya@ysize<\maya@tmp \maya@tmp=13mm
+          \ifnum\maya@ysize<\maya@tmp\mayaCnine\else\mayaCten\fi
+        \else\maya@tmp=17mm
+          \ifnum\maya@ysize<\maya@tmp\mayaCeleven\else\mayaCtwelve\fi\fi\fi
+    \else\maya@tmp=27mm
+      \ifnum\maya@ysize<\maya@tmp \maya@tmp=23mm
+        \ifnum\maya@ysize<\maya@tmp \maya@tmp=21mm
+          \ifnum\maya@ysize<\maya@tmp\mayaCthirteen\else\mayaCfourteen\fi
+        \else\maya@tmp=25mm
+          \ifnum\maya@ysize<\maya@tmp\mayaCfifteen\else\mayaCsixteen\fi\fi
+      \else\maya@tmp=29mm
+        \ifnum\maya@ysize<\maya@tmp\mayaCseventeen\else\mayaCeighteen\fi\fi\fi
+}
+%
+\def\mayaSetCartoucheAspect#1{%
+  \expandafter\edef\csname maya@xsize@\the\maya@F\endcsname{#1}%
+  \mayaSize{\maya@ysize}}
+%
+\def\maya@sethskip{\mayahskip=0pt}
+\def\maya@setvspace{%
+   \mayavspace = \maya@ysize \divide\mayavspace by 10}
+\def\maya@sethspace{%
+   \mayahspace = \maya@ysize \divide\mayahspace by 30}
+%
+%========================================================
+% The main entry from the exterior.
+% Calling sequence:
+%
+%   \maya{GlyphCode1 GlyphCode2 ... }
+%
+% where each of  GlyphCode1, GlyphCode2, ...  is a code of
+% a composed glyph, e.g. 
+% \maya{ 123 234:345 (123.[R]234):345.-456 }
+%
+\def\mayaGlyphInLine#1{\maya@depth=\maya@ysize
+    \advance\maya@depth-1.5ex \divide\maya@depth by 2
+    \maya@tsize=\maya@ysize \advance\maya@tsize by \mayavspace
+    \maya@tmp=\mayavspace \divide\maya@tmp by 2
+    \advance\maya@depth\maya@tmp\advance\maya@depth-\mayavcorrection 
+    \maya@tmp=\maya@xsize  \advance\maya@tmp by \mayahspace
+    \ifvmode\hskip 0pt\fi
+    \lower\maya@depth\hbox to \maya@tmp{%
+        \divide\mayahspace by 2 \divide\mayavspace by 2
+        \hskip\mayahspace\vbox to \maya@tsize{%
+            \vfil\maya@special{#1}\vskip\mayavspace}\hfil}}
+%
+%   d = y; d = y - 1.5 ex; d = (y - 1.5 ex)/2;
+%   t = y; t = y + v;
+%   tmp = v; tmp = v/2
+%   d = (y + v - 1.5 ex)/2; d = (y + v - 1.5 ex)/2 - vcorr
+%   tmp = x + h
+%
+\long\def\maya#1{\maya@A{ #1 @ @ }}
+\long\def\maya@A#1{\maya@B #1 @]}
+\long\def\maya@B #1#2 #3#4 @]{\def\a@{@}\def\a{#1}\ifx\a\a@\else\def\p{\par}
+  \ifx\a\p\par\maya@B #2 #3#4 @]%
+  \else\mayaGlyphInLine{#1#2}\def\b{#3}\ifx\b\a@\else%\space
+       \hskip\mayahskip\maya@B #3#4 @]\fi\fi\fi}
+%
+%====================================================================
+% To use with LaTeX in the table of content (toc) and such.
+%
+\def\mayaTOC#1{\ifx\documentstyle\mayaUndefinedMacro\maya{#1}
+    \else\protect\maya{#1}\fi}
+%
+%========================================================
+% Versions of \mayaGliph, \mayaGlyphInLine, and \maya
+% with captions under the glyphs
+%
+\mayavspaceC=3pt \def\maya@@s{*}
+\def\mayaGlyphC#1{\def\maya@@a{#1}%
+  \ifx\maya@@a\maya@@s\expandafter\maya@GC\else\maya@GC{#1}{#1}\fi}
+\def\maya@GC#1#2{\hbox to \maya@xsize{\baselineskip=0pt
+  \vbox{\vbox{\mayaGlyph{#2}}\vskip\mayavspaceC\mayaCaptionFont
+    \maya@capt{#1}}}}%
+{\catcode`\:=13 \catcode`\?=13           % against [french]{babel}
+\gdef\maya@capt#1{%
+  \vbox{\hbox to \maya@xsize{\hss\def:{\maya@co}\def?{\maya@qm}%
+    \setbox1=\hbox{#1}%
+    \ifnum\wd1>\maya@xsize\ifmayaCFW\maya@n=\wd1\divide\maya@n by 100
+      \maya@tsize=\maya@xsize\advance\maya@tsize-\wd1
+      \maya@intWidth=\maya@xsize\divide\maya@intWidth by 100
+      \special{ps:\the\maya@intWidth\space\the\maya@n\space m@Ya}%
+      \box1\hskip\maya@tsize\special{ps:grestore}%
+    \else\box1\fi\else\box1\fi\hss}}}
+}% end of catcode changes
+\def\mayaGlyphInLineC#1{\def\maya@@a{#1}%
+  \ifx\maya@@a\maya@@s\expandafter\maya@GLC\else\maya@GLC{#1}{#1}\fi}
+\def\maya@GLC#1#2{%
+    {\mayaCaptionFont\setbox1=\hbox{\strut}\global\maya@tmp=\ht1
+        \global\advance\maya@tmp\dp1}%
+    \advance\maya@tmp by \mayavspaceC
+    \maya@depth=\maya@ysize  \advance\maya@depth-1.5ex
+    \advance\maya@depth by \maya@tmp
+    \divide\maya@depth by 2
+    \maya@tsize=\maya@ysize \advance\maya@tsize by \mayavspace
+    \advance\maya@tsize by \maya@tmp
+    \maya@tmp=\mayavspace \divide\maya@tmp by 2
+    \advance\maya@depth by \maya@tmp
+    \advance\maya@depth-\mayavcorrection 
+    \maya@tmp=\maya@xsize  \advance\maya@tmp by \mayahspace
+    \ifvmode\hskip 0pt\fi
+    \lower\maya@depth\hbox to \maya@tmp{\hss\vbox to \maya@tsize
+        {\hsize=\maya@xsize\vfil\noindent\maya@GC{#1}{#2}\vfil}\hss}}
+%
+\long\def\mayaC#1{\maya@AC{ #1 @ @ }}
+\long\def\maya@AC#1{\maya@BC #1 @]}
+\long\def\maya@BC #1#2 #3#4 @]{\def\a@{@}\def\a{#1}\ifx\a\a@\else\def\p{\par}
+  \ifx\a\p\par\maya@BC #2 #3#4 @]%
+  \else\mayaGlyphInLineC{#1#2}\def\b{#3}\ifx\b\a@\else%\space
+       \hskip\mayahskip\maya@BC #3#4 @]\fi\fi\fi}
+%=============================================================
+% Versions of \mayaGliph with double captions under the glyphs
+%
+\def\mayaGlyphCC#1{\def\maya@@a{#1}%
+  \ifx\maya@@a\maya@@s\expandafter\maya@GCC
+  \else\maya@GCC{#1}{{\let\tt=\mayaCaptionFont\mayaDebug{#1}}}{#1}\fi}
+\def\maya@GCC#1#2#3{\hbox to \maya@xsize{\baselineskip=0pt
+  \vbox{\vbox{\mayaGlyph{#3}}\vskip\mayavspaceC\mayaCaptionFont
+    \maya@capt{#1}\vskip\mayavspaceC\maya@capt{#2}}}}%
+%==============================================================
+%
+%  Changing font in \mayaC.
+%
+\def\mayaCeighteen{\expandafter\ifx\csname maya@Cf18\endcsname\relax
+    \global\expandafter\def\csname maya@Cf18\endcsname{}\global\font
+    \maya@eighteen=cmtt12 at 18pt\fi\let\mayaCaptionFont=\maya@eighteen}
+\def\mayaCseventeen{\expandafter\ifx\csname maya@Cf17\endcsname\relax
+    \global\expandafter\def\csname maya@Cf17\endcsname{}\global\font
+    \maya@seventeen=cmtt12 at 17pt\fi\let\mayaCaptionFont=\maya@seventeen}
+\def\mayaCseventeen{\expandafter\ifx\csname maya@Cf17\endcsname\relax
+    \global\expandafter\def\csname maya@Cf17\endcsname{}\global\font
+    \maya@seventeen=cmtt12 at 17pt\fi\let\mayaCaptionFont=\maya@seventeen}
+\def\mayaCsixteen{\expandafter\ifx\csname maya@Cf16\endcsname\relax
+    \global\expandafter\def\csname maya@Cf16\endcsname{}\global\font
+    \maya@sixteen=cmtt12 at 16pt\fi\let\mayaCaptionFont=\maya@sixteen}
+\def\mayaCfifteen{\expandafter\ifx\csname maya@Cf15\endcsname\relax
+    \global\expandafter\def\csname maya@Cf15\endcsname{}\global\font
+    \maya@fifteen=cmtt12 at 15pt\fi\let\mayaCaptionFont=\maya@fifteen}
+\def\mayaCfourteen{\expandafter\ifx\csname maya@Cf14\endcsname\relax
+    \global\expandafter\def\csname maya@Cf14\endcsname{}\global\font
+    \maya@fourteen=cmtt12 at 14pt\fi\let\mayaCaptionFont=\maya@fourteen}
+\def\mayaCthirteen{\expandafter\ifx\csname maya@Cf13\endcsname\relax
+    \global\expandafter\def\csname maya@Cf13\endcsname{}\global\font
+    \maya@thirteen=cmtt12 at 13pt\fi\let\mayaCaptionFont=\maya@thirteen}
+\def\mayaCtwelve{\expandafter\ifx\csname maya@Cf12\endcsname\relax
+    \global\expandafter\def\csname maya@Cf12\endcsname{}\global\font
+    \maya@twelve=cmtt12\fi\let\mayaCaptionFont=\maya@twelve}
+\def\mayaCeleven{\expandafter\ifx\csname maya@Cf11\endcsname\relax
+    \global\expandafter\def\csname maya@Cf11\endcsname{}\global\font
+    \maya@eleven=cmtt10 at 11pt\fi\let\mayaCaptionFont=\maya@eleven}
+\def\mayaCten{\expandafter\ifx\csname maya@Cf10\endcsname\relax
+    \global\expandafter\def\csname maya@Cf10\endcsname{}\global\font
+    \maya@ten=cmtt10 \fi\let\mayaCaptionFont=\maya@ten}
+\def\mayaCnine{\expandafter\ifx\csname maya@Cf9\endcsname\relax
+    \global\expandafter\def\csname maya@Cf9\endcsname{}\global\font
+    \maya@nine=cmtt9 \fi\let\mayaCaptionFont=\maya@nine}
+\def\mayaCeight{\expandafter\ifx\csname maya@Cf8\endcsname\relax
+    \global\expandafter\def\csname maya@Cf8\endcsname{}\global\font
+    \maya@eight=cmtt8 \fi\let\mayaCaptionFont=\maya@eight}
+\def\mayaCseven{\expandafter\ifx\csname maya@Cf7\endcsname\relax
+    \global\expandafter\def\csname maya@Cf7\endcsname{}\global\font
+    \maya@seven=cmtt8 at 7pt\fi\let\mayaCaptionFont=\maya@seven}
+\def\mayaCsix{\expandafter\ifx\csname maya@Cf6\endcsname\relax
+    \global\expandafter\def\csname maya@Cf6\endcsname{}\global\font
+    \maya@six=cmtt8 at 6pt\fi\let\mayaCaptionFont=\maya@six}
+\def\mayaCfive{\expandafter\ifx\csname maya@Cf5\endcsname\relax
+    \global\expandafter\def\csname maya@Cf5\endcsname{}\global\font
+    \maya@five=cmtt8 at 5pt \fi\let\mayaCaptionFont=\maya@five}
+%
+\mayaCseven
+%
+%==============================================================
+%
+%  Replace in #1 all `/' by `:'. Write the result to \maya@gn
+%
+\def\maya@Slash#1{\maya@gn={}\def\a{#1}\def\e{}\ifx\a\e\else\maya@sA#1 @]\fi}
+\def\maya@sA#1#2 @]{\def\a{#1}\def\b{#2}\def\s{/}\def\e{}%
+    \ifx\a\s\maya@gn=\expandafter{\the\maya@gn  :}%
+    \else   \maya@gn=\expandafter{\the\maya@gn #1}\fi
+    \ifx\b\e\else\maya@sA#2 @]\fi}
+%
+%==============================================================
+%
+% Check if parentheses are balanced
+%
+\def\maya@CheckBP#1{\ifImport\maya@Message{[#1]}\fi\def\e{}\def\a{#1}\ifx\a\e\maya@true
+    \else \maya@ParDep=0\maya@CheckBPa#1 @]\fi}
+\def\maya@CheckBPa#1#2 @]{\def\a{#1}\def\L{(}
+    \ifx\a\L\advance\maya@ParDep by 1 %
+    \else\def\R{)}\ifx\a\R\advance\maya@ParDep by -1\fi\fi
+    \ifnum0>\maya@ParDep\maya@false
+    \else\def\e{}\def\a{#2}%
+        \ifx\a\e\ifnum0=\maya@ParDep\maya@true\else\maya@false\fi
+        \else\maya@CheckBPa#2 @]\fi\fi}
+%
+%================================================================
+% This section (till the next line "%========") is devoted to
+% selecting only those glyphs from the file  codex.mpf  which are
+% really used in the document.
+%
+% Here we extract glyph names from #1.
+% For each extracted name xxx we check if a macro \maya@f@@xxx is defined
+% where f is the current Maya font (the value of the counter \maya@F).
+% If it isn't then we define it and also \def\maya@f@n{xxx} where 
+% n is the current value of the counter \maya@f@GlyphNum which takes
+% successive values 0,1,2,... starting from the beginning of each page
+%
+\def\maya@GetGlyphNames#1{\E\ifx\csname maya@ff\the\maya@F\endcsname\relax
+  \else\def\a{#1}\ifx\e\a\else\maya@gn={}\maya@n=0\maya@ltrue\maya@GGN#1 \fi\fi}
+\def\maya@GGN#1#2 {\def\c{\noexpand#1}\def\a{#2}
+    \if\c\noexpand[\ifx\a\e\else\maya@GGNSkipArg#2 \fi
+    \else\maya@false
+        \if\c\noexpand<\maya@true \else
+        \if\c\noexpand>\maya@true \else
+        \if\c\noexpand-\maya@true \else
+        \if\c\noexpand|\maya@true \else
+        \if\c\noexpand=\maya@true \else
+        \if\c\noexpand+\maya@true \else
+        \if\c\noexpand?\maya@true \else
+        \if\c\noexpand*\maya@true \else
+        \if\c\noexpand'\maya@true \else
+        \if\c\noexpand(\maya@true \else
+        \if\c\noexpand)\maya@true\maya@lfalse \else
+        \if\c\noexpand/\maya@true\maya@ltrue \else
+        \if\c\noexpand.\maya@true\maya@ltrue \else
+        \if\c\noexpand:\maya@true\maya@ltrue \fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi
+        \ifmaya@ \maya@GGNend \ifx\a\e\else\maya@GGN#2 \fi
+        \else\ifmaya@l\advance\maya@n by 1
+            \maya@gn=\E{\the\maya@gn #1}\fi     % TeXbook, p.373
+            \ifx\a\e \maya@GGNend \else\maya@GGN#2 \fi\fi\fi}
+\def\maya@GGNSkipArg#1#2 {\def\a{#2}\ifx\a\e\else\def\c{\noexpand#1}
+    \if\c\noexpand]\maya@GGN#2 \else\maya@GGNSkipArg#2 \fi\fi}
+\def\OLDmaya@GGNSkipArg#1#2 {\def\a{#2}\ifx\a\e\else\def\c{#1}
+    \def\rb{]}\if\c\rb\maya@GGN#2 \else\maya@GGNSkipArg#2 \fi\fi}
+\def\maya@GGNend{\ifnum\maya@n>0
+%
+% (Added in v 0.27 for the multicolor support)
+% First, we remove the color indicator from the end of \maya@gn
+%
+  \E\E\E\maya@GGNc\E{\the\maya@gn}%
+%
+%   Here we must check if a macro \maya@f@@xxx is defined
+%   where xxx means the value of the token list register \maya@gn
+%   and f is the value of the counter \maya@F (see TeXbook, Ex 7.7)
+%
+  \E\ifx\csname maya@\the\maya@F @@\the\maya@gn\endcsname\relax
+    \global\maya@GlyphNum=\E\csname maya@\the\maya@F
+      @GlyphNum\endcsname\relax% It does not work without \relax. Why???... 
+    \E\xdef\csname maya@\the\maya@F
+      @\the\maya@GlyphNum\endcsname{\the\maya@gn}
+    \E\xdef\csname maya@\the\maya@F @@\the\maya@gn\endcsname{}%
+    \global\advance\maya@GlyphNum by 1
+    \E\xdef\csname maya@\the\maya@F @GlyphNum\endcsname{%
+      \the\maya@GlyphNum}\fi
+  \maya@gn={}\maya@n=0 \fi}
+\def\maya@GGNc#1{\maya@gn={}\maya@GGNcA#1 @]}
+\def\maya@GGNcA#1#2 @]{\def\b{#2}\maya@gn=\E{\the\maya@gn #1}%
+  \ifx\b\e\else\E\ifx\csname maya@c@\b\endcsname\relax\maya@GGNcA#2 @]\fi\fi}
+%
+%
+%   The following macro \maya@io reads the input file line by line
+%   and does the following.
+%   If the flag \maya@header is true then it copies to the output
+%   file everything (except the comments) before the first line starting
+%   with `%@' and then stops. For each line starting with `%L@ xxx yyy',
+%   the macro \maya@fL@xxx with the extension yyy is defined (it will be
+%   used for ligatures). Here f is the value of \maya@FNum
+%
+%   If the flag \maya@header is false then it looks for lines
+%   starting with `%@ xxx' where xxx is the extension of one of macros
+%   \maya@f@0, \maya@f@1, ... \maya@f@nnn (nnn is the value of the macro 
+%   \maya@f@GlyphNum and f is the current Maya font, i.e., the value of
+%   the counter \maya@F), and copies all further lines till the next line 
+%   starting with `%@'.
+%
+%   Here we again adapt a code from `epsf.tex' 
+%   (comments %" are also copied from there).
+%
+\def\maya@io{%
+        {%                      %"start a group to contain catcode changes
+            \def\e{\par}
+            \maya@iOKtrue         %"true while we are looping
+            \ifmaya@header\maya@oOKtrue\else\maya@oOKfalse \fi
+            %" Make all special characters, except space, to be of type
+            %" `other' so we process the file in almost verbatim mode
+            %" (TeXbook, p. 344).
+            \chardef\other=12
+            \def\do##1{\catcode`##1=\other}% space \ { } $ & # ^ ^K ^A % ~
+            \dospecials
+            \catcode`\ =10 \catcode`\@=11
+            \catcode`\^^M=5    % catcodes of ^M < > are changed for the case
+            \catcode`\<=\other % when the end of page appears between latex's
+            \catcode`\>=\other % \begin{verbatim} and \end{verbatim}
+            \loop                 %"reading lines from the mpf file
+                \read\maya@i to \maya@line 
+                \ifeof\maya@i         %"then no more input
+                    \maya@iOKfalse    %"so set completion flag
+                \else                 %"otherwise process one line
+                    \ifx\e\maya@line \else   % to avoid `\par' in ps file
+                        \expandafter\maya@aux\maya@line . . . . . \\%
+                        \ifmaya@oOK
+                            \ifmaya@c\else
+                                \immediate\write\maya@o{\maya@line}%
+                            \fi
+                        \fi
+                    \fi
+                \fi
+            \ifmaya@iOK
+            \repeat
+        }%                      %"end catcode changes
+        \closein\maya@i
+}
+%
+{\catcode`\%=12 \global\let\maya@P=%}
+%
+% this macro is used in \maya@io
+%
+% The extraction of \maya@a and \maya@b from \maya@aux saved 20% of time
+% on the execution of \output
+%
+\long\def\maya@aux#1#2 #3 #4 #5 \\{\maya@cfalse\ifx#1\maya@P\maya@a{#2}{#3}{#4}\fi}
+\long\def\maya@a#1#2#3{\maya@ctrue\def\a{@}\def\b{#1}%
+        \ifx\a\b\maya@b{#2}%
+        \else                        % %L or %W line
+            \ifmaya@header\def\a{L@}%          %L  initialize the ligature table
+                \ifx\a\b\mayaGlobalDefine{#2}{#3}%
+                \else\def\a{W@}\ifx\a\b        %W  read the cartouche width
+                    \expandafter\xdef\csname maya@xsize@\the\maya@F\endcsname{#2}
+                \fi\fi
+            \fi
+        \fi
+}
+\def\maya@b#1{%
+        \maya@oOKfalse
+        \ifmaya@header\maya@iOKfalse
+        \else \ifnum\maya@GlyphNum>0 \maya@oOKtrue\fi
+        \fi
+        \ifmaya@oOK
+                \def\a{.}\def\b{#1}\maya@oOKfalse
+                \ifx\a\b\else\maya@n=0
+                    {\loop             % start a group because of embedded loops
+                    \ifnum\maya@n<\maya@GlyphNum
+                        \ifmaya@oOK
+                            \maya@d=\maya@n \advance\maya@d-1
+                            \expandafter\xdef%
+                                \csname maya@\the\maya@F @\the\maya@d\endcsname%
+                                {\csname maya@\the\maya@F @\the\maya@n\endcsname}%
+                        \else
+                            \expandafter\ifx%
+                                \csname maya@\the\maya@F @\the\maya@n\endcsname\b
+                                \global\maya@oOKtrue
+                            \fi
+                        \fi
+                        \advance\maya@n by 1
+                    \repeat}%          % end of the embedded loop
+                    \ifmaya@oOK\global\advance\maya@GlyphNum-1\fi
+                \fi
+        \fi
+}
+%===================================================================
+%                                                 Multifont support
+%
+%   This macro works more or less like TeX's macro \font:
+%     \mayaFont\cs=foo
+%   where  \cs  is a control sequence and  foo.mpf  is a maya font file.
+%   It creates the macro \maya@ff<fn> (<fn> = 0,1,...) -> foo.mpf
+%   It defines also a macro \cs whose action is switching the counter
+%   \maya@F to the font number associated to \cs
+%
+\def\mayaFont#1=#2 {%
+% \expandafter\ifx\csname maya@fn#2\endcsname\relax              % added 23.4.7
+%    \expandafter\xdef\csname maya@fn#2\endcsname{\the\maya@FNum}% added 23.4.7
+    \xdef#1{\maya@F=\the\maya@FNum\noexpand\mayaSize\noexpand{\noexpand\maya@ysize}}%
+    \expandafter\xdef\csname maya@ff\the\maya@FNum\endcsname{#2.mpf}%
+    \expandafter\xdef\csname maya@\the\maya@FNum @GlyphNum\endcsname{0}%
+    \expandafter\xdef\csname maya@L\the\maya@FNum @\endcsname{0 1}%
+    \expandafter\xdef\csname maya@xsize@\the\maya@FNum\endcsname{1.53333}%
+    \openin\maya@i=#2.mpf
+    \ifeof\maya@i
+        \maya@MsgNotFound{#2.mpf}\special{header=#2.mpf}%
+        \global\expandafter\let\csname maya@ff\the\maya@FNum\endcsname=\relax%
+        \maya@Message{mayaFont::WARNING: No ligatures are loaded in font `#2'.}%
+        \maya@Message{\space\space\space\space\space\noexpand\mayaAddGlyph
+              \space commands will be ignored for this font.}%
+        \maya@Message{}\immediate\write\maya@o%
+              {userdict begin MayaDict begin SkipFont end end}%
+    \else
+        \immediate\write\maya@o{userdict begin MayaDict begin tmpini end end}%
+        \maya@headertrue
+        \maya@n=\maya@F\maya@F=\maya@FNum\maya@FNum=\maya@n
+        \maya@io
+        \maya@n=\maya@F\maya@F=\maya@FNum\maya@FNum=\maya@n
+        \maya@headerfalse
+        \immediate\write\maya@o{userdict begin MayaDict begin tmpend end end}%
+    \fi
+    \global\advance\maya@FNum by 1%
+% \else\xdef#1{\maya@F=\csname maya@fn#2\endcsname}\fi%           added 23.4.7
+}
+%==================================================================
+%                                                Multi-Color support
+%
+\def\mayaRGB#1#2{%\mayaGlobalDefine{#2}{#2}%
+  \expandafter\xdef\csname maya@c@#2\endcsname{1}%
+  \expandafter\xdef\csname maya@c@`#2\endcsname{1}\special{%
+  !userdict begin MayaDict begin ColorDict begin/c#2{#1}def/c`#2{#1}def end end end}}
+\expandafter\def\csname maya@c@`\endcsname{1}%
+%
+\def\mayaIgnoreRGB{\special{!userdict begin MayaDict begin/RGB{false}def end end}}
+%==================================================================
+%                                                 Ligature support
+%  Example:  after the command
+%
+%            \mayaAddLigature{123.456}{789}
+%
+%            `123.456' will be replaced with `789' in each glyph code
+%            of the font which was current when \mayaAddLigature was executed
+%
+%
+% check if a character #1 belongs to a string #2. The result: \ifmaya@
+\def\maya@Lin#1#2{\def\a{#2}\def\e{}%
+  \ifx\a\e\global\maya@false\else\maya@LinA#1#2 @]\fi\relax}
+\def\maya@LinA#1#2#3 @]{\def\a{#1}\def\b{#2}%
+  \if\a\b\global\maya@true\else\maya@Lin#1{#3}\fi\relax}
+%\def\In#1#2{\maya@Lin#1{#2}\ifmaya@l True \else False \fi\relax}
+%
+%   The macro \maya@LT creates/updates the ligature tree by adding
+%   the ligature  \maya@gn -> #1 to the current font <fn>.
+%   The ligature tree means the following. For any ligature A->B
+%   are defined macros \maya@L<fn>@<W> for all intial subwords W of A
+%   including the empty subword and A itself. The value (i.e. expansion)
+%   of such macro is a string of the form "0S 1R" where R is as in
+%   W->R if such ligature exists and R is empty if there is no
+%   ligature of the form W->...; S is a string of all characters c such
+%   that Wc is an initial subword of the left hand side of some ligature.
+%
+%   Before calling this macro, \maya@def should be defined
+%   either by  \let\maya@def=edef  or by  \let\maya@def=xdef
+%
+\def\maya@LT#1{%
+  \expandafter\ifx\csname maya@L\the\maya@F @\the\maya@gn\endcsname\relax
+    \expandafter\maya@def\csname maya@L\the\maya@F @\the\maya@gn\endcsname{0 1#1}%
+  \else\edef\Maya@act{\noexpand\maya@LTe{#1
+         \csname maya@L\the\maya@F @\the\maya@gn\endcsname}}\Maya@act\fi
+  \maya@lt={}\edef\Maya@act{\noexpand\maya@LTa{\the\maya@gn}}\Maya@act}
+\def\maya@LTa#1{\maya@LTb#1 @]}
+\def\maya@LTb#1#2 @]{%
+  \expandafter\ifx\csname maya@L\the\maya@F @\the\maya@lt\endcsname\relax
+     \expandafter\maya@def\csname maya@L\the\maya@F @\the\maya@lt\endcsname{0#1 1}%
+  \else\edef\Maya@act{\noexpand\maya@LTc{%
+      \csname maya@L\the\maya@F @\the\maya@lt\endcsname\space #1}}\Maya@act\fi
+  {\def\b{#2}\def\e{}\ifx\b\e\global\maya@lfalse\else\global\maya@ltrue\fi}%
+  \ifmaya@l\edef\Maya@act{\noexpand\maya@lt={\the\maya@lt #1}}\Maya@act
+     \maya@LTb#2 @]\fi}
+\def\maya@LTc#1{\maya@LTd#1 @]}
+\def\maya@LTd0#1 1#2 #3 @]{{\maya@Lin#3{#1}}%
+  \expandafter\maya@def\csname maya@L\the\maya@F @\the\maya@lt\endcsname{%
+     0#1\ifmaya@\else#3\fi\space 1#2}}
+\def\maya@LTe#1{\maya@LTf#1 @]}
+\def\maya@LTf#1 #2 #3 @]{%
+  \expandafter\maya@def\csname maya@L\the\maya@F @\the\maya@gn\endcsname{#2 1#1}}
+%
+%   The macro  \maya@L  applies the ligature table of the current
+%   font to the argumemt `#1' and appends the result to the token list
+%   register \maya@lt
+%   The substitution is applied only when maya@true. When \maya@L is called
+%   recursively, this flag is set on only after one of ](./:*+-='?|<
+%
+\def\maya@L#1{\def\e{}\def\a{#1}\let\NE=\noexpand\ifx\a\e\maya@ltrue\else
+    \ifmaya@\maya@Lc0 #1 @]\ifmaya@l\else\maya@La#1 @]\fi\else\maya@La#1 @]\fi\fi}
+\def\maya@La#1#2 @]{\global\maya@lt=\expandafter{\the\maya@lt #1}%
+  \maya@Lin{#1}{](./:*+-='?|<}\maya@L{#2}}
+\def\maya@Lc0#1 #2#3 @]{\edef\t{\csname maya@L\the\maya@F @#1\endcsname}
+  \edef\act{\NE\maya@Lp\t\space @]}\act\edef\act{\NE\maya@Lin#2\NE{\p}}\act
+  \ifmaya@\def\a{#3}%
+    \ifx\a\e\maya@Lz{#1#2}{#3}%
+    \else\maya@Lc0#1#2 #3 @]\ifmaya@l\else\maya@Lz{#1}{#2#3}\fi\fi
+  \else\maya@Lz{#1}{#2#3}\fi}
+\def\maya@Lp0#1 1#2 @]{\def\p{#1}}\def\maya@Lq0#1 1#2 @]{\def\q{#2}}
+\def\maya@Lz#1#2{\edef\t{\csname maya@L\the\maya@F @#1\endcsname}%
+  \edef\act{\NE\maya@Lq\t\space @]}\act
+  \ifx\e\q\maya@lfalse\relax
+  \else\edef\act{\NE\global\NE\maya@lt=\noexpand{\the\maya@lt\q}}\act
+     \maya@false\maya@L{#2}\fi\relax}
+%
+\def\mayaDefine#1#2{{\maya@Slash{#1}%
+  \edef\act{\noexpand\global\noexpand\maya@gn={\the\maya@gn}}\act}%
+  \let\maya@def=\edef\maya@LT{#2}}
+%
+\def\mayaGlobalDefine#1#2{{\maya@Slash{#1}\let\maya@def=\xdef\maya@LT{#2}}}
+%
+\def\mayaGlobalUndefine#1{{\maya@Slash{#1}\let\E=\expandafter
+  \E\ifx\csname maya@L\the\maya@F @\the\maya@gn\endcsname\relax\else
+    \edef\t{\csname maya@L\the\maya@F @\the\maya@gn\endcsname}%
+    \edef\act{\noexpand\maya@Lp\t\space @]}\act
+    \E\xdef\csname maya@L\the\maya@F @\the\maya@gn\endcsname{0\p\space 1}\fi}}
+%
+\def\mayaUndefine#1{{\maya@Slash{#1}%
+  \edef\act{\noexpand\global\noexpand\maya@gn={\the\maya@gn}}\act}%
+  \expandafter\ifx\csname maya@L\the\maya@F @\the\maya@gn\endcsname\relax\else
+    {\edef\t{\csname maya@L\the\maya@F @\the\maya@gn\endcsname}%
+     \edef\act{\noexpand\maya@Lp\t\space @]}\act
+     \edef\act{\noexpand\global\noexpand\maya@lt={\p}}\act}%
+     \expandafter\edef\csname maya@L\the\maya@F
+             @\the\maya@gn\endcsname{0\the\maya@lt\space 1}\fi}
+%
+\let\mayaAddLigature=\mayaDefine
+\let\mayaGlobalAddLigature=\mayaGlobalDefine
+\let\mayaDeleteLigature=\mayaUndefine
+\let\mayaGlobalDeleteLigature=\mayaGlobalUndefine
+%
+\def\mayaDebug#1{{%
+    \maya@Slash{#1}\maya@lt={}\let\E=\expandafter% copied from \mayaGlyph
+    \setbox1=\hbox{\maya@true\E\E\E\maya@L\E{\the\maya@gn}}% box to through away
+    \tt\the\maya@lt}}
+%===================================================================
+%
+% Open file  mayaps.pro  and copy the header into  mayaps.tmp
+%
+\def\maya@MsgNotFound#1{\maya@Message%
+    {Cannot open `#1'. Hope it will be found by dvips...}}%
+\immediate\openout\maya@o=mayaps.tmp
+\ifx\mayaNoVMtrick\mayaUndefinedMacro\relax
+  \maya@Message{Virtual Memory trick is used in mayaps.tmp: \maya@pc\maya@pc VMusage 0 0}
+  \immediate\write\maya@o{\maya@pc\maya@pc VMusage\maya@co\space 0\space 0}%
+\fi
+\openin\maya@i=mayaps.pro
+\ifeof\maya@i \maya@MsgNotFound{mayaps.pro}\special{header=mayaps.pro}%
+\else
+    \maya@headertrue
+    \maya@io
+    \maya@headerfalse
+\fi
+\maya@AGtrue
+%===============================================================
+%  dvips inserts this header when userdict is current
+%  so userdict gets MayaDict and MayaDict gets E, parse, etc.
+%
+\special{header=mayaps.tmp}
+%
+%  Let's hope that all future versions of dvips will insert
+%  this line after the texc.pro ...
+%
+\special{!/M{userdict begin MayaDict begin gsave}def}
+%                                             dvips writes this to SDict
+%
+%======================================================================
+% Addition to the output routine (the code which is executed at the end
+% of every page).
+%
+\maya@output={%\maya@Message{mayaps: GlyphNum=\the\maya@GlyphNum}%
+  \ifnum\maya@FNum>0
+    \maya@F=0
+    \loop
+        \maya@GlyphNum=\expandafter%
+            \csname maya@\the\maya@F @GlyphNum\endcsname\relax
+        \ifnum\maya@GlyphNum>0
+            \openin\maya@i=\csname maya@ff\the\maya@F\endcsname
+            \maya@n=\maya@GlyphNum\multiply\maya@n by 5
+            \immediate\write\maya@o{userdict begin MayaDict begin
+                \the\maya@n\space \the\maya@F\space AddGlyphs}%
+            \maya@io
+            \immediate\write\maya@o{end end end end}%
+            \ifnum\maya@GlyphNum>0 \maya@Message%
+                {mayaps::WARNING: The following glyphs are not found in
+                   `\csname maya@ff\the\maya@F\endcsname'}%
+                \message{\space}
+                {\loop
+                \ifnum\maya@GlyphNum>0
+                    \global\advance\maya@GlyphNum-1
+                    \message{\csname maya@\the\maya@F
+                        @\the\maya@GlyphNum\endcsname}
+                \repeat}
+                \maya@Message{}
+            \fi
+        \fi
+        \expandafter\xdef\csname maya@\the\maya@F @GlyphNum\endcsname{0}%
+        \advance\maya@F by 1
+    \ifnum\maya@F<\maya@FNum
+    \repeat
+  \fi
+}
+%
+%
+%   To prepend maya@output to output, we adapt here the macro
+%   \Prepend#1(to:)#2 from [V.Eijkhout, TeX by topics, Sect. 14.5.1]
+%
+\edef\Maya@act{\noexpand\output={\the\maya@output \the\output}}\Maya@act
+%
+%===================================================================
+%
+% This is a macro to add/replace a new glyph from an eps file.
+% It is called by
+%
+% \mayaAddGlyph[(L)(U)(R)(D)(S)]{GlyphName}AC{FileName}
+%
+% where:
+%  [(L)(U)(R)(D)(S)] (optional) is an affix modification vector. It is composed
+%                               of four modification sequences
+%                               (L left, U up, R right, D down, S single),
+%                               each sequence being composed of the characters
+%                               |, ', -, +, *, ?, R, and r whose meanings are:
+%
+%                               | '  symmetry with respect to the vertical axis
+%                               -    symmetry with respect to the horizontal axis
+%                               +    180 degree rotation (composition of | and -)
+%                               R ?  rotation by 90 degree counterclockwise
+%                               r *  rotation by 90 degree clockwise
+%
+%               Default value:  [()(|r)(|)(R)()]
+%
+%    GlyphName      (required)  The glyph name as it will appear in the argument
+%                               of the macro \maya{...}. Any sequence of letters
+%                               A..Z,  a..z  and digits  0..9
+%
+%    AC             (required)  A (for an affix) or C (for a central element)
+%
+%    FileName       (optional)  the name of the eps file
+%
+%               Default value:  GlyphName.eps
+%
+% Examples:
+%  \mayaAddGlyph{foo}C                 %Add central element  foo  from  foo.eps
+%
+%  \mayaAddGlyph{aa1}A{1.eps}          %Add affix  aa1  from  1.eps
+%
+%  \mayaAddGlyph[()(r)(|)(R)()]{aa2}A  %Add affix  aa2  from  aa2.eps  with
+%                                      %non-standard orientation when it is
+%                                      %attached on the top of a central element
+%
+\def\mayaAddGlyph#1#2 {\ifmaya@AG
+    %  check if epsf.tex is loaded. To do it, we check
+    %  if the macro \epsfgetbb is defined (see TeXbook Ex7.7)
+    \expandafter\ifx\csname epsfgetbb\endcsname\relax
+        \input epsf
+        \expandafter\ifx\csname epsfgetbb\endcsname\relax
+            \maya@Message{mayaps: cannot find `epsf.tex'.
+                \noexpand\mayaAddGlyph\space cannot work without}%
+            \maya@Message{ \space\space\space\space\space\space\space this file.
+                All \noexpand\mayaAddGlyph\space commands will be ignored.}%
+            \maya@Message{}\maya@AGfalse\fi\fi
+    \expandafter\ifx\csname maya@ff\the\maya@F\endcsname\relax\maya@AGfalse\fi
+    \ifmaya@AG{%
+        \def\lbracket{[}\def\a{#1}%
+        \ifx\a\lbracket\maya@AG[#2 @\else\maya@AG[]{#1}#2 @\fi}\fi\fi}
+\def\maya@AGwarn#1{\maya@Message{mayaps::mayaAddGlyph::WARNING: #1.
+    Ignore it.}\maya@Message{}}%
+\begingroup\catcode`\{=12 \catcode`\}=12 \catcode`\<=1 \catcode`\>=2
+    \xdef\maya@lbrace<{>\xdef\maya@rbrace<}>\endgroup
+\def\maya@write#1 @{\immediate\write\maya@o{#1}}%
+\def\maya@AG[#1]#2#3#4 @{%\message{[#1][#2][#3][#4]}
+    \def\e{}\def\modif{#1}\def\g{#2}\def\ac{#3}\def\fn{#4}%
+    \ifx\e\fn\def\fn{#2.eps}\fi
+    \openin\maya@i=\fn\relax
+    \ifeof\maya@i\maya@AGwarn{cannot open `\fn'}
+    \else
+        \ifx\e\modif\else\maya@CheckBP{#1}\ifmaya@\else
+            \def\modif{}\maya@AGwarn%
+                {#2: bad parentheses inside [...]}
+        \fi\fi
+        \def\a{a}\def\A{A}\def\c{c}\def\C{C}%
+        \ifx\ac\a\maya@true\else\ifx\ac\A\maya@true\else\ifx\ac\c\maya@false
+            \else\ifx\ac\C\maya@false\else\maya@AGwarn{bad A/C key;
+                 treated as `C'}\maya@false\fi\fi\fi\fi
+        \epsfgetbb{\fn}
+        \maya@n=\epsfurx\advance\maya@n-\epsfllx
+        \maya@d=\epsfury\advance\maya@d-\epsflly
+        \immediate\write\maya@o{userdict begin MayaDict begin 5 \the\maya@F
+            \space AddGlyphs/a\g\space\ifmaya@ true\else false\fi\space def/w\g
+            \space\the\maya@n\space def/h\g\space\the\maya@d\space def}%
+        \ifx\e\modif\else\immediate\write\maya@o{/A\g[\modif]def}\fi
+        \immediate\write\maya@o{/m\g\maya@lbrace save}%
+        \openin\maya@i=\fn\relax
+        %            a simplified version of the code from \maya@io:
+        {%
+            \def\e{\par}\maya@iOKtrue\chardef\other=12
+            \def\do##1{\catcode`##1=\other}\dospecials \catcode`\ =10
+            \loop
+                \read\maya@i to \maya@line 
+                \ifeof\maya@i \maya@iOKfalse
+                \else
+                    \ifx\e\maya@line \else
+                        \expandafter\maya@AGaux\maya@line . \\%
+                        \ifmaya@c\else
+                            \expandafter\maya@write\maya@line @\fi\fi\fi
+            \ifmaya@iOK
+            \repeat
+        }%
+        \closein\maya@i
+        \immediate\write\maya@o{restore\maya@rbrace bind def end end end end}%
+        \maya@gn={\g}%
+        \expandafter\xdef\csname maya@\the\maya@F @@\the\maya@gn\endcsname{}%
+        \mayaGlobalDefine{#2}{#2}\fi}%
+\long\def\maya@AGaux#1#2 \\{%
+    \ifx#1\maya@P\maya@ctrue\else\maya@cfalse\fi}%
+%===========================================================================
+% Import a glyph from another font. Calling sequence:
+%
+%   \mayaImport[(L)(U)(R)(D)(S)]{NewName}\font{OldName}AC
+%
+% where:
+% [(L)(U)(R)(D)(S)] (optional) same as in \mayaAddGlyph
+%                              by default the value is inherited
+%                              from the imported glyph
+%
+% NewName           (required)
+%
+% \font             (required) the font to import from
+%                              as appear in \mayaFont\font=...
+%
+% OldName           (required) the glyph name in \font
+%
+% AC                (optional) A or C (affix/central)
+%
+\def\mayaImport#1#2 {{\let\E=\expandafter\def\e{}\maya@AGtrue%
+  \let\l=\maya@lbrace\let\s=\space\def\lbracket{[}\def\a{#1}%
+  \ifx\a\lbracket\maya@Imp[#2 @\else\maya@Imp[]{#1}#2 @\fi}}
+\def\maya@Imp[#1]#2#3#4#5 @{\def\modif{#1}\def\ac{#5}%
+  \def\u{#4\s\the\maya@n\s imp}\def\v{\maya@rbrace def}\def\t{\u1\v}%
+  \E\xdef\csname maya@\the\maya@F @@#2\endcsname{}\maya@CheckBP{#1}%
+  \ifmaya@\else\def\modif{}\maya@Message
+    {mayaps::mayaImport::WARNING: #2: bad parentheses in `[#1]'}\fi
+  {#3\maya@GetGlyphNames{#4}\global\maya@n=\maya@F}\def\a{a}\def\A{A}%
+  \ifnum\maya@n=\maya@F\def\o{#2}\def\n{#4}\ifx\o\n\maya@AGfalse\fi\fi
+  \ifmaya@AG\mayaGlobalDefine{#4}{#4}%
+    \immediate\write\maya@o{userdict begin MayaDict begin 5 \the\maya@F\s
+      AddGlyphs/A#2\ifx\modif\e\l mdf0/A\t\else[\modif]def\fi}%
+    \immediate\write\maya@o{/w#2\l1/w\t/h#2\l1/h\t/m#2\l(#4)/m\u\v/a#2%
+      \ifx\ac\e\l false/a\t
+      \else\s\ifx\a\ac true\else\ifx\A\ac true\else false\fi\fi\s def\fi}%
+    \immediate\write\maya@o{end end end end}
+  \else\maya@Message{mayaps::mayaImport::WARNING: self-import #2->#4}\fi}%
+%=================================================================----------
+%
+\openin\maya@i=red89.tex
+\ifeof\maya@i
+  \maya@Message{mayaps::WARNING: Can not find red89. The macros}%
+  \maya@Message{\space\space\space\space\space\space\space\space\space
+     \noexpand\mayaRed,\space\noexpand\mayaBW,\space\noexpand\codexBW
+     \space are not available.}%
+\else
+  \closein\maya@i
+  \input red89
+\fi
+%
+\ifx\mayaNoPreloadedFont\mayaUndefinedMacro\relax
+  \openin\maya@i=codex.mpf
+  \ifeof\maya@i
+    \maya@Message{mayaps::WARNING: Can not open codex.mpf. No Maya font is preloaded.}%
+  \else
+    \closein\maya@i
+    \mayaFont\codex=codex
+    \codex
+    \openin\maya@i=red89.tex
+    \ifeof\maya@i\relax\else\closein\maya@i\mayaRed\fi
+    \mayaSize{12mm}                 % Default size recommended by Bruno Delprat
+  \fi
+\fi
+%
+\catcode`\@=12
+%
+\mayaRGB{0.85 0.10 0.04}r       % The color of red glyphs
+%
+\endinput

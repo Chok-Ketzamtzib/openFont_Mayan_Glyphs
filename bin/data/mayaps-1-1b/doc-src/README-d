@@ -1,0 +1,31 @@
+doc-src.tar  contains the source files for the reference manual mayaps-d.pdf v 1.1b
+and for the font maps codex-map.pdf, gates-map.pdf, thompson-map.pdf, thompson2-map.pdf
+
+1). To extract the files from the archive, type
+
+  tar -xf doc-src.tar
+
+*-d.mpf  are subsets of the corresponding Maya fonts *.mpf which contain minimal
+collections of glyphs needed for mayaps-d
+
+2). Compilation of mayaps-d.pdf:
+
+Copy the files mayaps.tex, mayaps.pro, red89.tex to this directory and run:
+
+  latex mayaps-d
+  dvips mayaps-d -z
+  ps2pdf mayaps-d.ps
+
+(three warnings `glyph not found' should appear, it is OK; -z option enable the hypertext
+references in the table of contents).
+
+3). Compilation of codex-map.pdf (similar for other *-map.pdf):
+
+Put the files  mayaps.tex, mpfmap.tex, codex.mpf, codex-map.tex  to the same directory and run
+
+  tex codex-map
+  dvips codex-map
+  ps2pdf codex-map.ps
+
+The result will be identical to doc/codex-map.pdf
+

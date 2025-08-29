@@ -1,0 +1,33 @@
+MayaPS: A system for typing Ancient Maya glyphs with TeX/LaTeX
+
+Authors:  Stepan Orevkov  (TeX tools)
+          Bruno  Delprat  (Maya fonts)
+
+version 1.1b, March 5, 2017
+
+To extract files (Linux/MacOS) type:
+
+  tar -xf mayaps-1-1.tar.gz
+
+(all files will be extractet into the current directory)
+
+doc/mayaps-d.pdf  detailed reference manual
+doc/*-map.pdf     tables of glyphs in available Maya fonts (font maps)
+doc-scr/          source files for mayaps-d.pdf (can be used as an example)
+makefont.tar      tool for creating new mayaps fonts (see mayaps-d.pdf, Sect.12.2)
+
+To use makefont, extract it by
+
+  tar -xf makefont.tar
+
+and see makefont/README-m
+
+--------------------
+All files here are the same as in version 1.0 (December 2012) except:
+  mayaps.tex
+  mayaps.pro
+  mayaps-d.tex (in doc-src.tar)
+  mayaps-d.pdf
+  cotrace.c    (in makefont.tar)
+  README
+

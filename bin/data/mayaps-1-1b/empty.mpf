@@ -1,0 +1,9 @@
+% Empty MayaPS Font (for MayaPS v 0.24 or higher)
+userdict begin MayaDict begin (89) 1 NewFont
+%@
+end end end
+% end of the font header
+userdict begin MayaDict begin 0 AG
+%@
+end end end end
+
