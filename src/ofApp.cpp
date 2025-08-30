@@ -71,7 +71,7 @@ void ofApp::draw(){
 
 	ofDrawBitmapString("fps: "+ofToString(ofGetFrameRate()), 10, 10);
 
-	verdana14.drawString("Current glyph: " + glyphNames[currentGlyphIndex], 30, 55);
+	verdana14.drawString("Curre)nt glyph: " + glyphNames[currentGlyphIndex], 30, 55);
 
 	// Draw current glyph at different sizes
 	ofSetColor(255);
@@ -108,16 +108,16 @@ void ofApp::draw(){
 	}
 
 	ofSetColor(29,29,29);
-	ofDrawLine(30, 450, ofGetWidth()-4, 450);
+	ofDrawLine(30, 500, ofGetWidth()-4, 500);
 
 	// Animation examples
 	ofSetColor(225);
-	verdana14.drawString("ROTATION", 30, 475);
-	verdana14.drawString("SCALE", 300, 475);
+	verdana14.drawString("ROTATION", 30, 525);
+	verdana14.drawString("SCALE", 300, 525);
 
 	// Rotating glyph
 	ofPushMatrix();
-		ofTranslate(110, 520);
+		ofTranslate(110, 600);
 		ofRotateZDeg(ofGetElapsedTimef() * -30.0);
 		ofSetColor(255, 200, 100);
 		mayanGlyphs[currentGlyphIndex].draw(-32, -32, 64, 64);
@@ -125,7 +125,7 @@ void ofApp::draw(){
 
 	// Scaling glyph
 	ofPushMatrix();
-		ofTranslate(380, 520);
+		ofTranslate(380, 600);
 		float scale = 1.0 + 0.5 * sin(ofGetElapsedTimef() * 2.0);
 		ofScale(scale, scale);
 		ofSetColor(100, 255, 200);
