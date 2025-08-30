@@ -22,7 +22,7 @@ void ofApp::setup(){
 	mayanGlyphs.resize(glyphNames.size());
 	
 	for(int i = 0; i < glyphNames.size(); i++){
-		string filename = "mayan_glyphs/" + ofToLower(glyphNames[i]) + ".png";
+		string filename = "mayan_glyphs/" + ofToLower(glyphNames[i]) + ".jpeg";
 		
 		// Try to load the real Mayan glyph image
 		if(mayanGlyphs[i].load(filename)){
