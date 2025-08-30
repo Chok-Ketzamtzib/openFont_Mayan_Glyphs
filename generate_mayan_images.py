@@ -27,11 +27,11 @@ mayan_glyphs = [
     ("imix", "\\textmaya{X}"),       # Imix - Earth Monster
 ]
 
-# Base LaTeX template
-latex_template = """\\documentclass{{standalone}}
-\\usepackage{{mayaps}}
+# Base LaTeX template for MayaPS system
+latex_template = """\\documentclass{{article}}
+\\input{{mayaps.tex}}
 \\begin{{document}}
-\\Huge
+\\pagestyle{{empty}}
 {glyph_command}
 \\end{{document}}
 """
@@ -44,7 +44,10 @@ for name, command in mayan_glyphs:
     print(f"Created {filename}")
 
 # Create a compilation script
-compile_script = """#!/bin/bash
+
+"""
+
+compile_script = #!/bin/bash
 # Script to compile LaTeX files to PNG images
 # Make sure you have pdflatex and ImageMagick (convert) installed
 
@@ -73,7 +76,7 @@ done
 
 echo "Done! PNG files created in latex_glyphs directory."
 echo "Copy the PNG files to your openFrameworks bin/data/mayan_glyphs/ directory."
-"""
+
 
 with open("compile_glyphs.sh", 'w') as f:
     f.write(compile_script)
@@ -88,3 +91,5 @@ print("1. Make sure you have LaTeX and ImageMagick installed")
 print("2. Copy your mayaps.sty file to the latex_glyphs directory")
 print("3. Run: ./compile_glyphs.sh")
 print("4. Copy the generated PNG files to bin/data/mayan_glyphs/")
+
+"""

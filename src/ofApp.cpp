@@ -5,7 +5,7 @@ void ofApp::setup(){
 	ofBackground(54, 54, 54, 255);
 
 	//old OF default is 96 - but this results in fonts looking larger than in other programs.
-	ofTrueTypeFont::setGlobalDpi(72);
+	ofTrueTypeFont::setGlobalDpi(79);
 
 	verdana14.load("verdana.ttf", 14, true, true);
 	verdana14.setLineHeight(18.0f);
@@ -18,31 +18,40 @@ void ofApp::setup(){
 	// Setup Mayan glyph names (common Mayan day signs and numbers)
 	glyphNames = {"Ahau", "Kan", "Muluk", "Ok", "Chuen", "Eb", "Ben", "Ix", "Men", "Cib", "Caban", "Etznab", "Cauac", "Imix"};
 	
-	// Create placeholder colored rectangles for now
-	// Later you can replace these with actual glyph images
+	// Try to load real Mayan glyph images, fall back to patterns if not found
 	mayanGlyphs.resize(glyphNames.size());
 	
 	for(int i = 0; i < glyphNames.size(); i++){
-		// Create a colored placeholder rectangle
-		mayanGlyphs[i].allocate(64, 64, OF_IMAGE_COLOR);
+		string filename = "mayan_glyphs/" + ofToLower(glyphNames[i]) + ".png";
 		
-		// Fill with different colors for each glyph
-		ofColor glyphColor;
-		glyphColor.setHsb((i * 25) % 255, 200, 255);
-		
-		ofPixels& pixels = mayanGlyphs[i].getPixels();
-		for(int y = 0; y < 64; y++){
-			for(int x = 0; x < 64; x++){
-				// Create a simple pattern for each glyph
-				bool isPattern = ((x + y + i*10) % 20 < 10) || ((x - y + i*5) % 15 < 7);
-				if(isPattern){
-					pixels.setColor(x, y, glyphColor);
-				} else {
-					pixels.setColor(x, y, ofColor::black);
+		// Try to load the real Mayan glyph image
+		if(mayanGlyphs[i].load(filename)){
+			ofLogNotice() << "Loaded real Mayan glyph: " << filename;
+		} else {
+			// Fall back to creating beautiful geometric patterns
+			ofLogNotice() << "Creating pattern for: " << glyphNames[i] << " (image not found: " << filename << ")";
+			
+			// Create a colored glyph image
+			mayanGlyphs[i].allocate(64, 64, OF_IMAGE_COLOR);
+			
+			// Fill with different colors for each glyph
+			ofColor glyphColor;
+			glyphColor.setHsb((i * 25) % 255, 200, 255);
+			
+			ofPixels& pixels = mayanGlyphs[i].getPixels();
+			for(int y = 0; y < 64; y++){
+				for(int x = 0; x < 64; x++){
+					// Create unique geometric patterns inspired by Mayan art
+					bool isPattern = ((x + y + i*10) % 20 < 10) || ((x - y + i*5) % 15 < 7);
+					if(isPattern){
+						pixels.setColor(x, y, glyphColor);
+					} else {
+						pixels.setColor(x, y, ofColor::black);
+					}
 				}
 			}
+			mayanGlyphs[i].update();
 		}
-		mayanGlyphs[i].update();
 	}
 
 	currentGlyphIndex = 0;
@@ -59,6 +68,9 @@ void ofApp::update(){
 void ofApp::draw(){
 	ofSetColor(225);
 	verdana14.drawString("Mayan Hieroglyphs Example - press SPACE to cycle glyphs", 30, 35);
+
+	ofDrawBitmapString("fps: "+ofToString(ofGetFrameRate()), 10, 10);
+
 	verdana14.drawString("Current glyph: " + glyphNames[currentGlyphIndex], 30, 55);
 
 	// Draw current glyph at different sizes

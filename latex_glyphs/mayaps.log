@@ -1,0 +1,55 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  29 AUG 2025 21:45
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**mayaps.tex
+(./mayaps.tex
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-01-18>
+This is `mayaps.tex' v 1.1b <March 4, 2017>
+\maya@i=\read2
+\maya@o=\write3
+\maya@xsize=\dimen141
+\maya@ysize=\dimen142
+\maya@depth=\dimen143
+\maya@rsize=\dimen144
+\maya@tsize=\dimen145
+\maya@tmp=\dimen146
+\mayavcorrection=\dimen147
+\mayavspace=\dimen148
+\mayavspaceC=\dimen149
+\mayahspace=\dimen150
+\mayahskip=\skip49
+\maya@intWidth=\count196
+\maya@intHeight=\count197
+\maya@ParDep=\count198
+\maya@GlyphNum=\count199
+\maya@n=\count266
+\maya@FNum=\count267
+\maya@FNumNF=\count268
+\maya@F=\count269
+\maya@output=\toks17
+\maya@gn=\toks18
+\maya@lt=\toks19
+nonactive
+\openout3 = `mayaps.tmp'.
+
+Virtual Memory trick is used in mayaps.tmp: %%VMusage 0 0
+mayaps::WARNING: Can not find red89. The macros
+         \mayaRed , \mayaBW , \codexBW  are not available.
+)
+! Emergency stop.
+<*> mayaps.tex
+              
+*** (job aborted, no legal \end found)
+
+ 
+Here is how much of TeX's memory you used:
+ 3679 strings out of 473190
+ 45710 string characters out of 5715801
+ 422087 words of memory out of 5000000
+ 27025 multiletter control sequences out of 15000+600000
+ 559172 words of font info for 38 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 120i,0n,293p,126b,79s stack positions out of 10000i,1000n,20000p,200000b,200000s
+!  ==> Fatal error occurred, no output PDF file produced!

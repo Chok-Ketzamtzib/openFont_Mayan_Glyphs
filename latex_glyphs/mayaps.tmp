@@ -1,0 +1,308 @@
+%%VMusage: 0 0
+userdict begin TeXDict begin/m@Ya{div currentpoint 3 2 roll currentpoint 
+gsave translate 1 scale neg exch neg exch translate}bind def end 
+/MayaDict 44 dict def MayaDict begin 
+/gi{getinterval}def/pd{putinterval dup}def 
+/ie{ifelse}def/bd{bind def}def/showpage{}def 
+/ColorDict 100 dict def/RGB{true}def 
+/Udf{ 
+gsave newpath .01 dup moveto .99 .01 lineto .99 dup lineto .01 .99 lineto 
+closepath gsave .9 setgray fill grestore gsave .02 setlinewidth stroke 
+grestore clip dup length 3 le{0.45}{0.38}ie /Helvetica findfont exch 
+scalefont setfont dup length 4 le{0.1 0.35}{0.1 0.58 moveto dup 0 4 gi 
+show 4 1 index length 4 sub gi 0.1 0.2}ie moveto show grestore 
+}bd 
+/mdf0[()(|r)(|)(R)()]def 
+/parse{ 
+36 dict begin 
+/s exch def/n s length def/k 0 def/i0 0 def 
+0 1 n 1 sub{dup s exch get 47 eq{s exch 58 put}{pop}ie}for 
+PaS1 
+/dep 0 def/horiz false def 
+0 1 n 1 sub{s exch get/c exch def 
+dep 0 eq{c 46 eq{/horiz true def exit}if}if CorDep 
+}for 
+/delim horiz{46}{58}ie def 
+/dep 0 def/k 1 def /i0 0 def 
+0 1 n 1 sub{/i exch def /c s i get def 
+dep 0 eq{c delim eq{ 
+s i0 i i0 sub gi horiz{k 1 roll}if 
+/i0 i 1 add def/k k 1 add def 
+}if}if 
+CorDep 
+}for 
+s i0 n i0 sub gi horiz{k 1 roll}if 
+k 1 eq{pop /c n 0 gt{s 0 get}{0}ie def 
+PaS2 
+s length 0 gt{s 0 get}{0}ie 40 ne{MayaDict/ng ng 1 add put 
+/ab 0 string def 
+s length 0 gt{s n 1 sub get 62 eq{ 
+0 1 n 1 sub{/i exch def 
+s i get 60 eq{/n n 2 sub i sub def 
+/ab s i 1 add n gi def/s s 0 i gi def/n i def exit 
+}if 
+}for 
+}if}if 
+/name n 1 add string def /a{[s/Udf cvx] 1 1 0 false}def 
+/subr{name copy pop s name 1 n gi copy pop name}bd 
+(m) subr token{ 
+exch length 0 eq{ 
+GDict exch known{ 
+b length 0 eq{name cvn}{b 6 name cvn cvx put b bind}ie 
+(w) subr cvx cvn load 
+(h) subr cvx cvn load 
+/ia 
+(a) subr cvx cvn load def 
+/mdf 
+(A) subr cvx cvn dup GDict exch 
+known{load}{pop mdf0}ie def 
+0 PaS3 
+}{a}ie 
+}{pop a}ie 
+}{a}ie 
+dup not ab length 0 ne and{/w 4 index def/h 3 index def 
+ab parse/ia exch def ia{4 get PM}if ApplyTr 
+/y exch def/c h y div ISFy mul def 
+/x exch def/a w x div ISFx mul def 
+ia{a c lt{/c a}{/a c}ie def}if 
+/x w a x mul sub 2 div def 
+/y h c y mul sub 2 div def 
+[/gsave cvx x y/translate cvx a c/scale cvx 9 8 roll/cvx cvx 
+/exec cvx/grestore cvx 17 16 roll/cvx cvx/exec cvx]bind 5 1 roll 
+}if 
+} 
+{ s parse /ia exch def/mdf ia{exch}{mdf0}ie def 
+4 3 roll[exch/cvx cvx/exec cvx] 
+b length 0 gt{10 array dup 0 b 0 6 gi pd 6 4 3 roll pd 9 b 7 get put 
+}if bind 4 1 roll PaS3 
+}ie 
+} 
+{ /sb 0 def/a 11 k mul 5 add array def/n 0 def/sC 0 def/m 0 def 
+k copy/posC horiz{1}{k 1 sub}ie def 
+/D false def/C false def/LG()def/LD false def 
+0 1 k 1 sub{/i exch def 
+PreParse 
+horiz{not{/posC i def}if pop pop}{ 
+C{pop pop pop}{{ 
+D{pop pop}{ 
+dup{LD{/posC i 1 sub def/D true def}if 
+}{ 
+1 index LG eq{/posC i 1 add def}if 
+}ie/LD exch def 
+/LG exch def 
+}ie 
+} 
+{/posC i def/C true def pop pop}ie 
+}ie 
+}ie 
+}for/C false def 
+0 1 k 1 sub{dup posC eq{/C true def}if/i exch 11 mul def 
+parse 
+/ia exch def 
+ia{horiz{C{2}{0}ie}{C{1}{3}ie}ie 
+get MayaDict begin PM end 
+}if 
+ApplyTr/h exch def/w exch def 
+horiz{/x w h div def/y 0 def/c 1 h div def/b x def} 
+{/x 0 def/y h w div def/c 1 w div def/b y def}ie 
+/sb sb b add def 
+/sa[c c /gsave cvx /scale cvx null /cvx cvx /exec cvx 
+/grestore cvx x y /translate cvx]bd 
+sa exch 4 exch put sa a i 4 add 11 gi copy pop 
+ia not{/n n 1 add def/sC sC b add def b m gt{/m b def}if}if 
+}for 
+/c 1 sb div def 
+/sb sb c mul def 
+[/gsave cvx horiz{c 1}{1 c}ie /scale cvx] a 0 4 gi copy pop 
+a k 11 mul 4 add /grestore cvx put 
+a bind 
+horiz{sb 1}{1 sb}ie 
+0 false 
+}ie 
+end}bd 
+/CorDep{c 40 eq c 60 eq or{dep 1 add /dep exch def} 
+{c 41 eq c 62 eq or{dep 1 sub /dep exch def}if}ie 
+}bd 
+/PaS1{ 
+{ n 0 eq{exit}if /inpar false def 
+s 0 get 40 eq{s n 1 sub get 41 eq{/dep 1 def/inpar true def 
+1 1 n 2 sub{s exch get/c exch def 
+dep 0 eq{/inpar false def exit}if CorDep 
+}for 
+}if}if 
+inpar{/s s 1 n 2 sub gi def /n s length def}{exit}ie 
+}loop}bd 
+/PaS2{ 
+/na 0 def/dep 0 def/sa n string def/i 0 def 
+s{ /c exch def c 91 eq{/dep dep 1 add def/i i 1 add def} 
+{ c 93 eq{dep 0 eq{/sa()def/na 0 def exit}if 
+/dep dep 1 sub def/i i 1 add def 
+} 
+{ c 39 eq c 43 eq or c 45 eq or c 124 eq or 
+c 42 eq or c 63 eq or c 61 eq or dep 0 gt or{ 
+sa na c 61 eq{99}{c}ie put/na na 1 add def/i i 1 add def 
+} 
+{ /sa sa 0 na gi def/n n i sub def/s s i n gi def exit}ie 
+}ie 
+}ie 
+}forall /b[]def 
+n 0 gt{ 
+s n 1 sub get 96 eq{/n n 1 sub def/s s 0 n gi def}{ 
+1 1 n{1 sub/i exch def/name n i sub 1 add string def(c)name copy pop 
+s i n i sub gi name 1 n i sub gi copy pop name 
+token{exch 
+length 0 eq{ColorDict exch known{/n i def/s s 0 i gi def 
+RGB{/b[/gsave cvx/ColorDict cvx/begin cvx name cvx cvn 
+/setrgbcolor cvx/end cvx null/grestore cvx]def 
+}if exit 
+}if}{pop}ie 
+}if 
+}for 
+}ie 
+n 0 gt{s 0 get 40 eq s n 1 sub get 41 ne and{ 
+n -1 1{/n exch def s n 1 sub get 41 eq{/s s 0 n gi def exit}if}for 
+}if}if 
+}if 
+}bd 
+/PaS3{ /ia1 
+ia sa{dup 99 eq 1 index 67 eq or{pop pop false} 
+{dup 97 eq exch 65 eq or{pop true}if}ie 
+}forall def 
+ia ia1 not and{mdf 4 get PM}if sa PM ia1{mdf}if ia1 
+}bd 
+/PreParse{20 dict begin 
+/s exch def/n s length def PaS1 PaS2 
+/name n 1 add string def /a{/ia1 false def/id false def}bd 
+/subr{name copy pop s name 1 n gi copy pop name}bd 
+(m)subr token{ 
+exch length 0 eq{ 
+GDict exch known{ 
+/ia 
+(a) subr cvx cvn load def 
+/ia1 
+ia sa{dup 99 eq 1 index 67 eq or{pop pop false} 
+{dup 97 eq exch 65 eq or{pop true}if}ie 
+}forall def 
+/id false def 
+ia1{s 0 get NumIC{1 index eq id or/id exch def}forall pop}if 
+}{a}ie 
+}{pop a}ie 
+}{a}ie 
+s id ia1 
+end}bd 
+/Di [[0 1 2 3 4 5 6 7] 
+[1 0 3 2 7 6 5 4] 
+[2 3 0 1 5 4 7 6] 
+[3 2 1 0 6 7 4 5] 
+[4 5 7 6 3 2 0 1] 
+[5 4 6 7 1 0 2 3] 
+[6 7 5 4 0 1 3 2] 
+[7 6 4 5 2 3 1 0]] 
+def 
+/DT 256 string def 0 1 255{DT exch 0 put}for 
+DT 124 1 put DT 45 2 put 
+DT 43 3 put DT 82 4 put DT 114 6 put 
+DT 42 6 put DT 63 4 put DT 39 1 put 
+/PM{{DT exch get exch Di exch get exch get}forall}bd 
+/ApplyTr{ 
+dup 0 eq{pop} 
+{ 6 dict begin/tr exch def/h exch def/w exch def/proc exch def 
+tr 4 ge{/hh w def/ww h def}{/hh h def/ww w def}ie 
+[/gsave cvx ww 2 div hh 2 div/translate cvx Tr tr get/exec cvx 
+w neg 2 div h neg 2 div/translate cvx proc/cvx cvx/exec cvx 
+/grestore cvx]cvx bind ww hh end 
+}ie 
+}bd 
+/Tr[{}{-1 1 scale}bind{1 -1 scale}bind{-1 -1 scale}bind{90 rotate}bind 
+{1 -1 scale 90 rotate}bind{270 rotate}bind{-1 1 scale 90 rotate}bind 
+]def 
+/cvpt{655.36 div 72.27 div 72 mul}bd 
+/E{ 
+dup GDicts exch get/GDict exch def GGDicts exch get/GGDict exch def 
+GDict begin 11 dict begin MayaDict/ng 0 put 
+/h exch cvpt def/w exch cvpt def/ndot true 2 index{46 ne and}forall def 
+parse /aff exch def aff{4 get 0 exch PM exch Di exch get exch get}if 
+ApplyTr/hh exch def/ww exch def 
+/w0 ndot{w h add 2 div}{w}ie def 
+/kx w0 ww div def/ky h hh div def 
+ng 1 eq{/kx ky kx min def/ky kx def}if 
+ndot{w kx ww mul sub 2 div 0 translate}if 
+kx ky scale cvx exec grestore end end end end 
+}bd 
+/ExtArr{dup length 3 2 roll add array dup 3 1 roll copy pop}bd 
+/NewFt{NF1 GDicts NFonts 3 dict dup begin/NumIC 5 index def/ISFx 0.65 def/ISFy 0.6 def end 
+put GGDicts exch NFonts exch NF2 NF3 NFonts 1 sub def}bd 
+/NF1{NFonts GDicts length ge{/GDicts 32 GDicts ExtArr def/GGDicts 32 GGDicts ExtArr def}if}bd 
+/NF2{/NFonts NFonts 1 add def}bd/NF3{1 add dict dup begin put pop/iFont}bd 
+/NewF{SkF Si get dup GDicts exch 1 dict dup/Si Si 1 add def begin/NumIC 
+6 index def end put GGDicts exch 3 2 roll NF3 SkF Si 1 sub get def}bd 
+/SetInfixScaleFactors{GDicts iFont get begin/ISFy exch def/ISFx exch def end}bd 
+/SkipFont{/SkF 1 SkF ExtArr def SkF dup length 1 sub NFonts put NF1 NF2}bd 
+/tmpini{/NewFont{NewFt}def}bd/tmpend{/NewFont{NewF}def}bd 
+tmpend/SkF[]def/Si 0 def 
+/AddGlyphs{dup GGDicts exch get begin GDicts exch 2 copy get 
+dup length 5 4 roll add dict copy dup begin put}bd 
+/AG{SkF Si 1 sub get AddGlyphs}bd 
+/GIni{GGDict begin gsave}bd/GEnd{grestore end}bd 
+/GDicts 32 array def/GGDicts 32 array def/NFonts 0 def 
+/imp1{GDicts exch get dup 2 index known{begin cvx exec end exch pop}{pop pop}ie}bd 
+/imp{GDicts exch get dup 2 index known{begin cvx exec end pop}{pop pop Udf}ie}bd 
+end end 
+userdict begin MayaDict begin tmpini end end
+userdict begin MayaDict begin (89) 20 NewFont 
+/D{def}def/B{bind D}bind D/T{true}D/F{false}D/RD{readonly def}B/l{length}D/d{dup}D 
+/ND{noaccess def}B/X{exch}B/p 0 D/g 33 D/M(MayaT1f0pppppppp)D/FN{M 16 string copy d 7 
+4 gi iFont X cvs l 8 add 2 copy 5 2 roll 4 gi cvs l add 0 X gi}B/Z{show GEnd}B/A{0 0 
+moveto cvn findfont 1000 scalefont setfont}B/U{d 1 fn put d 3 get 0 g put B Ft begin 
+/CharStrings CharStrings d l 1 add dict copy d begin}B/V{1 index X ND end/Encoding 
+Encoding 256 array copy d g 5 4 roll put RD D end fn cvn Ft d l dict copy definefont 
+pop/g g 1 add d 256 eq{pop 33/p p 1 add D}if D}B/P{g 33 eq{/fn p FN D/Ft 11 dict def Ft 
+begin/FontInfo 7 dict d begin/version(1.0)RD/ItalicAngle 0 D/isFixedPitch F D/FullName 
+(MayaPS Font)RD end RD/FontName fn cvn D/Weight(Medium)RD/FamilyName(MayaPS Font) 
+RD/FontBBox{0 0 1000 1000}RD/PaintType 0 D/FontType 1 D/FontMatrix[.001 0 0 .001 0 0]RD 
+/Encoding 256 array 0 1 255{1 index exch/.notdef put}for RD end Ft/Private 16 dict d 
+begin/ND{noaccess def}executeonly D/BlueValues[-10 0]D/MinFeature{16 16}D/password 5839 
+D Ft/CharStrings 1 dict d begin/.notdef<7f2e4d927d91633f4a>ND end end put put}if}B 
+end end end 
+userdict begin MayaDict begin tmpend end end
+userdict begin MayaDict begin 15 0 AddGlyphs
+/a800 T D/w800 464 D/h800 1000 D/A800[()(|r)(|)(R)(|r)]D P/m800{GIni()A( )Z}U/g800 
+<10bf317079c8c36f86ca7ff93ffa1bb046f2e431d6c20febc0f57086c6a007dfe0396ae0 
+25c61f5608cbb006f29ff0a13c39b1107cb441b65c04fcc251f359d426fdf8921e6fd0ca 
+17f8846e7791928beb7be4cbbae40d92d54a50df49ba8adf056d9fe923cc7ec24ec82fea 
+7c3109a7c72c96523025792f6cd191711a458cb48b054ff0b454b910de4ef44fcddfc186 
+40e7c92aeaee39492f5a0d2a4c0a7fb8b644eae20ac302abd79908572a42a37aa049bdf4 
+fe756fff3b5ebd1e7e9653bc7e1f87745dfb876e7856a9b73b5f5faee749ee60f74c14e5 
+db7107d68b53c09e679bfeb3486f394c639564cc33039cb6a7b9bc62333533823f449d3f 
+63ba9310c2914826c6985b2056c0e40dca4f389eb31ba662a0f68ad885764fcd8d3ab61f 
+b3ab5b178ebe14a5359834782039873aa11e027f910aa0677cb27f251e251ac83fdfd1d9 
+9688a66981bd690d18d937b8485cabfd6c22cc0c705588510a20fbad7b10675fd61ed753 
+a1df98c0c4316abd1e87839f4488add63db4bdcfae265dfeb2ca4cef8d4d7fa527bf2e76 
+d44dd6aabc0a69a7546ae2e8d0a42e797321614de7881443137261a09586435500448abb 
+500d1e786645d9f64db8ab0151dd026eb2eea88051aeb2157b4f565a4206910b76ef2e87 
+9bd5eae7d7cf520f0003f4bcb54196fab1a0db8d8f2eceb579954cc210c98b22d28adbc5 
+6b6e03e40083e9e49db9419e60c9bb36dbce497ad9a06a847c4e3041ed6b49b6ae27b693 
+78292112c8354fc055d93261c3a293393da485c91e88aca875710ab9e41b6f072eaa60b2 
+66c11c9decc1004270a5d579280de077d4e74b8244c39f65e2448cfccc9a4a6895cd8749 
+37f1d6ec63907bc9f0628b0d5431e11f06fa34d6d679e88d63bed074ad878cebd052b6d0 
+1c137c983d29cad143fe12c6334f162740b8a2d407e29cbadc4636ecbee7a2c84861dc40 
+b4d06f226e09af44d95e529471321021a815b7bdca720c5c2b3b9910efa0618ff9b94d61 
+70bab7ddb4d0d0e9d499cd1b884c5357b1ef6a767c6bd048e4991b9ae62060f5908add48 
+050de964e2cac6fede9f1676cba7fa9edb15a46169b546bf5bdc7f> 
+V 
+/a801 T D/w801 313 D/h801 1000 D/A801[()(|r)(|)(R)(|r)]D P/m801{GIni()A( )Z}U/g801 
+<10bf317079c714a6fad40e568186903b8e6de674eb7d85b781fcec4de53302252ca87f15 
+0d7953c036c08474f3bac2e9dad8b90c743ad4b6544416d46938f5718c759b0d22e61daa 
+41c60ad4718721826c5a4d13cdb5eb3063b98fd093f5c444e5cde356f952c0bbd0285a7e 
+b5b536c03c81096c73c327515567108610> 
+V 
+/a802 T D/w802 356 D/h802 1000 D/A802[()(|r)(|)(R)(|r)]D P/m802{GIni()A( )Z}U/g802 
+<10bf317079c7212a10102afa9af55acd970e107fadc405c3fbb071eb54bf892bd0120f99 
+0797a5c15440dbe4929eec52d94a03e7fc4616c157d173128096f4030678369b3de96f57 
+aa0adbd29e6eb7c0ff28e7feb937602fd5d464fd729349a0489307f8464d36f0b96df1b2 
+0b360d9031bee512e8590c0cfbca9ff9069a25f4d948260c395e094e0ccd2a4358f87471 
+dace94852951f7395164068ed0fb97d386d52f5ce3809f0b946b8a90330003601a3f0f0e 
+f7780a188f7174a0883a0cdc3fcddf35e90cff50c7ab870d98f3c626bd371894cf2ca53d 
+7ed466> 
+V 
+end end end end
